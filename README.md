@@ -1,4 +1,4 @@
-# purescript-foreign-object
+# gopurs-foreign-object
 
 [![Latest release](http://img.shields.io/github/release/purescript/purescript-foreign-object.svg)](https://github.com/purescript/purescript-foreign-object/releases)
 [![Build status](https://github.com/purescript/purescript-foreign-object/workflows/CI/badge.svg?branch=master)](https://github.com/purescript/purescript-foreign-object/actions?query=workflow%3ACI+branch%3Amaster)
