@@ -1,7 +1,7 @@
 const newImpl = function () {
   return {};
 };
-export { newImpl as new };
+export { newImpl };
 
 export function peekImpl(just) {
   return function (nothing) {
@@ -34,4 +34,4 @@ const deleteImpl = function (k) {
     };
   };
 };
-export { deleteImpl as delete };
+export { deleteImpl };
