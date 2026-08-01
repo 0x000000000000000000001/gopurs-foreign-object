@@ -27,7 +27,10 @@ foreign import data STObject :: Region -> Type -> Type
 type role STObject nominal representational
 
 -- | Create a new, empty mutable object
-foreign import new :: forall a r. ST r (STObject r a)
+foreign import newImpl :: forall a r. ST r (STObject r a)
+
+new :: forall a r. ST r (STObject r a)
+new = newImpl
 
 -- | Get the value for a key in a mutable object
 peek :: forall a r. String -> STObject r a -> ST r (Maybe a)
@@ -39,4 +42,7 @@ foreign import peekImpl :: forall a b r. (a -> b) -> b -> String -> STObject r a
 foreign import poke :: forall a r. String -> a -> STObject r a -> ST r (STObject r a)
 
 -- | Remove a key and the corresponding value from a mutable object
-foreign import delete :: forall a r. String -> STObject r a -> ST r (STObject r a)
+foreign import deleteImpl :: forall a r. String -> STObject r a -> ST r (STObject r a)
+
+delete :: forall a r. String -> STObject r a -> ST r (STObject r a)
+delete = deleteImpl
