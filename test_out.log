@@ -1,0 +1,56 @@
+=== Building project with spago ===
+Reading Spago workspace configuration...
+
+✓ Selecting package to build: foreign-object
+
+Downloading dependencies...
+No lockfile found, generating it...
+Lockfile written to spago.lock. Please commit this file.
+Building...
+[ERROR 1/5 ModuleNotFound] test/Test/Foreign/Object.purs:5:1
+
+  5  import Control.Monad.Writer (runWriter, tell)
+     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+  Module Control.Monad.Writer was not found.
+  Make sure the source file exists, and that it has been provided as an input to the compiler.
+
+[ERROR 2/5 ModuleNotFound] test/Test/Foreign/Object.purs:13:1
+
+  13  import Data.Map as M
+      ^^^^^^^^^^^^^^^^^^^^
+
+  Module Data.Map was not found.
+  Make sure the source file exists, and that it has been provided as an input to the compiler.
+
+[ERROR 3/5 ModuleNotFound] test/Test/Foreign/Object.purs:26:1
+
+  26  import Test.QuickCheck ((<?>), quickCheck, quickCheck', (===))
+      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+  Module Test.QuickCheck was not found.
+  Make sure the source file exists, and that it has been provided as an input to the compiler.
+
+[ERROR 4/5 ModuleNotFound] test/Test/Foreign/Object.purs:27:1
+
+  27  import Test.QuickCheck.Arbitrary (class Arbitrary, arbitrary)
+      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+  Module Test.QuickCheck.Arbitrary was not found.
+  Make sure the source file exists, and that it has been provided as an input to the compiler.
+
+[ERROR 5/5 ModuleNotFound] test/Test/Foreign/Object.purs:28:1
+
+  28  import Test.QuickCheck.Gen as Gen
+      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+  Module Test.QuickCheck.Gen was not found.
+  Make sure the source file exists, and that it has been provided as an input to the compiler.
+
+           Src   Lib   All
+Warnings     0     0     0
+Errors       5     0     5
+
+✘ Failed to build.
+
+Spago build failed

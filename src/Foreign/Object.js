@@ -12,8 +12,12 @@ export function _copyST(m) {
 
 export const empty = {};
 
-export function runST(f) {
+export function _runST(f) {
   return f();
+}
+
+export function _dereference(m) {
+  return m;
 }
 
 export function _fmapObject(m0, f) {

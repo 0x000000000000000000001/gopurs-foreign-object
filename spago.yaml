@@ -1,15 +1,1 @@
-package:
-  name: "foreign-object"
-  dependencies:
-    - arrays
-    - foldable-traversable
-    - functions
-    - gen
-    - lists
-    - maybe
-    - prelude
-    - st
-    - tailrec
-    - tuples
-    - typelevel-prelude
-    - unfoldable
+spago.go.yaml
