@@ -78,11 +78,17 @@ thawST = _copyST
 freezeST :: forall a r. STObject r a -> ST r (Object a)
 freezeST = _copyST
 
+foreign import data EscapedSTObject :: Type -> Type
+
+foreign import _runST :: forall a. (forall r. ST r (STObject r a)) -> EscapedSTObject a
+foreign import _dereference :: forall a. EscapedSTObject a -> Object a
+
 -- | Freeze a mutable Object, creating an immutable Object. Use this function as you would use
 -- | `Control.Monad.ST.run` (from the `purescript-st` package) to freeze a mutable reference.
 -- |
 -- | The rank-2 type prevents the Object from escaping the scope of `runST`.
-foreign import runST :: forall a. (forall r. ST r (STObject r a)) -> Object a
+runST :: forall a. (forall r. ST r (STObject r a)) -> Object a
+runST st = _dereference (_runST st)
 
 mutate :: forall a b. (forall r. STObject r a -> ST r b) -> Object a -> Object a
 mutate f m = runST do

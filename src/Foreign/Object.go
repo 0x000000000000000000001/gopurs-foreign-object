@@ -1,7 +1,5 @@
 package Object
 
-import "gopurs/output/gopurs_runtime"
-
 func _CopyST(m map[string]interface{}) func(interface{}) interface{} {
 	return func(_ interface{}) interface{} {
 		newMap := make(map[string]interface{})
@@ -14,9 +12,11 @@ func _CopyST(m map[string]interface{}) func(interface{}) interface{} {
 
 var Empty = map[string]interface{}{}
 
-func RunST(f func(interface{}) interface{}) interface{} {
-	val := f(nil).(gopurs_runtime.Value)
-	mPtr := val.PtrVal().(*map[string]interface{})
+func _RunST(f func(interface{}) interface{}) interface{} {
+	return f(nil)
+}
+
+func _Dereference(mPtr *map[string]interface{}) map[string]interface{} {
 	return *mPtr
 }
 
