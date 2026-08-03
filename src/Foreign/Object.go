@@ -6,7 +6,7 @@ func _CopyST(m map[string]interface{}) func(interface{}) interface{} {
 		for k, v := range m {
 			newMap[k] = v
 		}
-		return &newMap
+		return newMap
 	}
 }
 
@@ -16,8 +16,8 @@ func _RunST(f func(interface{}) interface{}) interface{} {
 	return f(nil)
 }
 
-func _Dereference(mPtr *map[string]interface{}) map[string]interface{} {
-	return *mPtr
+func _Dereference(mPtr map[string]interface{}) map[string]interface{} {
+	return mPtr
 }
 
 func _FmapObject(m0 map[string]interface{}, f func(interface{}) interface{}) map[string]interface{} {
@@ -91,9 +91,9 @@ func _Lookup(no interface{}, yes func(interface{}) interface{}, k string, m map[
 	return no
 }
 
-func _LookupST(no interface{}, yes func(interface{}) interface{}, k string, m *map[string]interface{}) func(interface{}) interface{} {
+func _LookupST(no interface{}, yes func(interface{}) interface{}, k string, m map[string]interface{}) func(interface{}) interface{} {
 	return func(_ interface{}) interface{} {
-		if val, ok := (*m)[k]; ok {
+		if val, ok := m[k]; ok {
 			return yes(val)
 		}
 		return no
