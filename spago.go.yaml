@@ -31,6 +31,9 @@ package:
       - prelude
       - refs
       - tailrec
+      - transformers
+      - ordered-collections
+      - quickcheck
 
 workspace:
   packageSet:
@@ -94,6 +97,8 @@ workspace:
       path: "../gopurs-nullable"
     numbers:
       path: "../gopurs-numbers"
+    ordered-collections:
+      path: "../gopurs-ordered-collections"
     partial:
       path: "../gopurs-partial"
     prelude:

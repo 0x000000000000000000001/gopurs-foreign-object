@@ -1,5 +1,9 @@
 package Object
 
+import (
+	"sort"
+)
+
 func _CopyST(m map[string]interface{}) func(interface{}) interface{} {
 	return func(_ interface{}) interface{} {
 		newMap := make(map[string]interface{})
@@ -46,7 +50,13 @@ func _FoldM(bind func(interface{}) func(interface{}) interface{}) func(func(inte
 						return f(z)(k)(m[k])
 					}
 				}
+				keys := make([]string, 0, len(m))
 				for k := range m {
+					keys = append(keys, k)
+				}
+				sort.Strings(keys)
+				
+				for _, k := range keys {
 					acc = bind(acc)(g(k))
 				}
 				return acc
@@ -57,7 +67,14 @@ func _FoldM(bind func(interface{}) func(interface{}) interface{}) func(func(inte
 
 func _FoldSCObject(m map[string]interface{}, z interface{}, f func(interface{}) func(string) func(interface{}) interface{}, fromMaybe func(interface{}) func(interface{}) interface{}) interface{} {
 	acc := z
-	for k, v := range m {
+	keys := make([]string, 0, len(m))
+	for k := range m {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+	
+	for _, k := range keys {
+		v := m[k]
 		maybeR := f(acc)(k)(v)
 		r := fromMaybe(nil)(maybeR)
 		if r == nil {
@@ -102,18 +119,30 @@ func _LookupST(no interface{}, yes func(interface{}) interface{}, k string, m ma
 
 func ToArrayWithKey(f func(string) func(interface{}) interface{}) func(map[string]interface{}) []interface{} {
 	return func(m map[string]interface{}) []interface{} {
+		keys := make([]string, 0, len(m))
+		for k := range m {
+			keys = append(keys, k)
+		}
+		sort.Strings(keys)
+		
 		r := make([]interface{}, 0, len(m))
-		for k, v := range m {
-			r = append(r, f(k)(v))
+		for _, k := range keys {
+			r = append(r, f(k)(m[k]))
 		}
 		return r
 	}
 }
 
 func Keys(m map[string]interface{}) []interface{} {
-	r := make([]interface{}, 0, len(m))
+	keys := make([]string, 0, len(m))
 	for k := range m {
-		r = append(r, k)
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+	
+	r := make([]interface{}, len(keys))
+	for i, k := range keys {
+		r[i] = k
 	}
 	return r
 }
