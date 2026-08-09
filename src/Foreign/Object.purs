@@ -136,7 +136,7 @@ instance traversableObject :: Traversable Object where
 
 instance traversableWithIndexObject :: TraversableWithIndex String Object where
   traverseWithIndex f ms =
-    fold (\acc k v -> flip (insert k) <$> acc <*> f k v) (pure empty) ms
+    fromFoldable <$> traverse (\(Tuple k v) -> Tuple k <$> f k v) (toAscArray ms)
 
 -- Unfortunately the above are not short-circuitable (consider using purescript-machines)
 -- so we need special cases:
