@@ -200,11 +200,11 @@ member = runFn4 _lookup false (const true)
 
 -- | Insert or replace a key/value pair in a map
 insert :: forall a. String -> a -> Object a -> Object a
-insert k v = mutate (OST.poke k v)
+insert k v m = mutate (\s -> void (OST.poke k v s)) m
 
 -- | Delete a key and value from a map
 delete :: forall a. String -> Object a -> Object a
-delete k = mutate (OST.delete k)
+delete k m = mutate (\s -> void (OST.delete k s)) m
 
 -- | Delete a key and value from a map, returning the value
 -- | as well as the subsequent map
@@ -213,9 +213,9 @@ pop k m = lookup k m <#> \a -> Tuple a (delete k m)
 
 -- | Insert, remove or update a value for a key in a map
 alter :: forall a. (Maybe a -> Maybe a) -> String -> Object a -> Object a
-alter f k m = case f (k `lookup` m) of
-  Nothing -> delete k m
-  Just v -> insert k v m
+alter f k m = mutate (\s -> void (case f (lookup k m) of
+    Nothing -> OST.delete k s
+    Just v -> OST.poke k v s)) m
 
 -- | Remove or update a value for a key in a map
 update :: forall a. (a -> Maybe a) -> String -> Object a -> Object a
@@ -275,13 +275,13 @@ values = toArrayWithKey (\_ v -> v)
 -- | Compute the union of two maps, preferring the first map in the case of
 -- | duplicate keys.
 union :: forall a. Object a -> Object a -> Object a
-union m = mutate (\s -> foldM (\s' k v -> OST.poke k v s') s m)
+union m m2 = mutate (\s -> void (foldM (\s' k v -> OST.poke k v s') s m)) m2
 
 -- | Compute the union of two maps, using the specified function
 -- | to combine values for duplicate keys.
 unionWith :: forall a. (a -> a -> a) -> Object a -> Object a -> Object a
 unionWith f m1 m2 =
-  mutate (\s1 -> foldM (\s2 k v1 -> OST.poke k (runFn4 _lookup v1 (\v2 -> f v1 v2) k m2) s2) s1 m1) m2
+  mutate (\s1 -> void (foldM (\s2 k v1 -> OST.poke k (runFn4 _lookup v1 (\v2 -> f v1 v2) k m2) s2) s1 m1)) m2
 
 -- | Compute the union of a collection of maps
 unions :: forall f a. Foldable f => f (Object a) -> Object a
