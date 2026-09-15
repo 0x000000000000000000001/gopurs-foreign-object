@@ -16,12 +16,8 @@ func _CopyST(m map[string]interface{}) func(interface{}) interface{} {
 
 var Empty = map[string]interface{}{}
 
-func _RunST(f func(interface{}) interface{}) interface{} {
+func RunST(f func(interface{}) interface{}) interface{} {
 	return f(nil)
-}
-
-func _Dereference(mPtr map[string]interface{}) map[string]interface{} {
-	return mPtr
 }
 
 func _FmapObject(m0 map[string]interface{}, f func(interface{}) interface{}) map[string]interface{} {

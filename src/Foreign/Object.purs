@@ -78,17 +78,11 @@ thawST = _copyST
 freezeST :: forall a r. STObject r a -> ST r (Object a)
 freezeST = _copyST
 
-foreign import data EscapedSTObject :: Type -> Type
-
-foreign import _runST :: forall a. (forall r. ST r (STObject r a)) -> EscapedSTObject a
-foreign import _dereference :: forall a. EscapedSTObject a -> Object a
-
 -- | Freeze a mutable Object, creating an immutable Object. Use this function as you would use
 -- | `Control.Monad.ST.run` (from the `purescript-st` package) to freeze a mutable reference.
 -- |
 -- | The rank-2 type prevents the Object from escaping the scope of `runST`.
-runST :: forall a. (forall r. ST r (STObject r a)) -> Object a
-runST st = _dereference (_runST st)
+foreign import runST :: forall a. (forall r. ST r (STObject r a)) -> Object a
 
 mutate :: forall a b. (forall r. STObject r a -> ST r b) -> Object a -> Object a
 mutate f m = runST do
@@ -136,7 +130,7 @@ instance traversableObject :: Traversable Object where
 
 instance traversableWithIndexObject :: TraversableWithIndex String Object where
   traverseWithIndex f ms =
-    fromFoldable <$> traverse (\(Tuple k v) -> Tuple k <$> f k v) (toAscArray ms)
+    fold (\acc k v -> flip (insert k) <$> acc <*> f k v) (pure empty) ms
 
 -- Unfortunately the above are not short-circuitable (consider using purescript-machines)
 -- so we need special cases:
@@ -200,11 +194,11 @@ member = runFn4 _lookup false (const true)
 
 -- | Insert or replace a key/value pair in a map
 insert :: forall a. String -> a -> Object a -> Object a
-insert k v m = mutate (\s -> void (OST.poke k v s)) m
+insert k v = mutate (OST.poke k v)
 
 -- | Delete a key and value from a map
 delete :: forall a. String -> Object a -> Object a
-delete k m = mutate (\s -> void (OST.delete k s)) m
+delete k = mutate (OST.delete k)
 
 -- | Delete a key and value from a map, returning the value
 -- | as well as the subsequent map
@@ -213,9 +207,9 @@ pop k m = lookup k m <#> \a -> Tuple a (delete k m)
 
 -- | Insert, remove or update a value for a key in a map
 alter :: forall a. (Maybe a -> Maybe a) -> String -> Object a -> Object a
-alter f k m = mutate (\s -> void (case f (lookup k m) of
-    Nothing -> OST.delete k s
-    Just v -> OST.poke k v s)) m
+alter f k m = case f (k `lookup` m) of
+  Nothing -> delete k m
+  Just v -> insert k v m
 
 -- | Remove or update a value for a key in a map
 update :: forall a. (a -> Maybe a) -> String -> Object a -> Object a
@@ -275,13 +269,13 @@ values = toArrayWithKey (\_ v -> v)
 -- | Compute the union of two maps, preferring the first map in the case of
 -- | duplicate keys.
 union :: forall a. Object a -> Object a -> Object a
-union m m2 = mutate (\s -> void (foldM (\s' k v -> OST.poke k v s') s m)) m2
+union m = mutate (\s -> foldM (\s' k v -> OST.poke k v s') s m)
 
 -- | Compute the union of two maps, using the specified function
 -- | to combine values for duplicate keys.
 unionWith :: forall a. (a -> a -> a) -> Object a -> Object a -> Object a
 unionWith f m1 m2 =
-  mutate (\s1 -> void (foldM (\s2 k v1 -> OST.poke k (runFn4 _lookup v1 (\v2 -> f v1 v2) k m2) s2) s1 m1)) m2
+  mutate (\s1 -> foldM (\s2 k v1 -> OST.poke k (runFn4 _lookup v1 (\v2 -> f v1 v2) k m2) s2) s1 m1) m2
 
 -- | Compute the union of a collection of maps
 unions :: forall f a. Foldable f => f (Object a) -> Object a
