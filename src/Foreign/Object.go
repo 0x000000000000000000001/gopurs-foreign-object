@@ -2,6 +2,7 @@ package Object
 
 import (
 	"sort"
+	"gopurs/output/gopurs_runtime"
 )
 
 func _CopyST(m map[string]interface{}) func(interface{}) interface{} {
@@ -97,8 +98,10 @@ func Size(m map[string]interface{}) int64 {
 	return int64(len(m))
 }
 
-func _Lookup(no interface{}, yes func(interface{}) interface{}, k string, m map[string]interface{}) interface{} {
-	if val, ok := m[k]; ok {
+func _Lookup(no interface{}, yes func(interface{}) interface{}, k string, m gopurs_runtime.Value) interface{} {
+	object, ok := gopurs_runtime.ReadJSONObjectValue(m)
+	if !ok { return no }
+	if val, ok := object.Lookup(k); ok {
 		return yes(val)
 	}
 	return no
